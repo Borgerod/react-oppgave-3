@@ -1,0 +1,215 @@
+@import "tailwindcss";
+/* @plugin "daisyui"; */
+@plugin "../tailwind.daisyui.plugin.js";
+
+:root {
+	--background: #ffffff;
+	--background: #e3dad3;
+	/* --background: rgb(121, 113, 107); */
+	--background: var(--color-neutral-300);
+	--foreground: #171717;
+	--background-image: url("./assets/images/background_light.png");
+	--container: #ffffff; /* new */
+	/* --accent: #ed4a4a; */
+	--accent: #a0b162;
+	--accent-neg: #ce594f;
+	--accent-neg: #e56260;
+	--accent-neg: #72b5e520;
+
+	/* --accent-neg-dark: #e56260; */
+	--accent-neg-dark: #ce594f;
+	/* --accent-neg-dark: #63262b; */
+	/* --accent-neg-dark: #360b04; */
+	--accent-neg-dark: #5a1415;
+	--accent-neg-dark: #38586e;
+	/* --accent-neg-dark: #754a53; */
+	--secondary: #ededed;
+	--primary: #0d0808;
+	/* --secondary: #0a0a0a; */
+	--XXX: #f5f5f5b3;
+	--YYY: #0d0808;
+	--XXX: rgba(255, 255, 255, 0.04);
+	--XXX: #d4d4d4;
+	--XXX: #e3dad3;
+	--XXX: #f5f1ee;
+	/* --noise: 1; */
+	/* --depth: 1; */
+
+	--outline: #e3dad3;
+	--outline: #dcdcdc;
+	--border: #ffffff;
+	/* --outline: oklch(51.379% 0.00006 271.152 / 0.15); */
+	/* --border: oklch(87.111% 0.00555 286.025 / 0.25); */
+	/* --outline: oklch(62.793% 0.25768 29.223);
+	--border: oklch(45.203% 0.3133 264.073); */
+	/* --surface-border: #d8c8bf;
+	--surface-outline: #4b3a35; */
+}
+.dark {
+	--background-image: url("./assets/images/background_dark.png");
+	--background: #0a0a0a;
+	--foreground: #ededed;
+	--foreground: #d6d6d6;
+	--container: #111827;
+	--foreground: var(--color-zinc-400);
+	/* --foreground: #b26e68; */
+	--container: #191919;
+	--container: var(--color-zinc-950);
+	--container: var(--color-zinc-900);
+	--container: var(--color-zinc-900);
+	--accent: #a0b162;
+	--accent-neg-dark: #5a1415;
+	--accent-neg-dark: #72b6e5;
+	--accent-neg: #ce594f;
+	--accent-neg: #f9f6db;
+	--accent-neg: #38586e54;
+	--accent-neg-dark: #fff6a0;
+	--accent-neg-dark: #0f181d;
+	--secondary: #0a0a0a;
+	--primary: #ededed;
+
+	/* --outline: transparent;
+	--border: transparent;
+	--outline: #19191932; */
+	--outline: oklch(51.379% 0.00006 271.152 / 0.15);
+	--border: oklch(87.111% 0.00555 286.025 / 0.25);
+	/* --outline: #0a0a0a; */
+	/* --border: #111827; */
+	/* --surface-border: #4b3a35;
+	--surface-outline: #d8c8bf; */
+	/* --secondary: #ededed; */
+	/* --noise: 1;
+	--depth: 1; */
+
+	/* --XXX: #0d0808;
+	--YYY: #f5f5f5b3; */
+	/* --XXX: rgba(255, 255, 255, 0.04);
+	--XXX: #d4d4d4;
+	--XXX: #e3dad3;
+	--XXX: #f5f1ee; */
+	@layer components {
+		/* level-x: describes how many child-levels the current div is - it will adjust the rounded based on that  */
+		.glass.container.level-1 {
+			@apply bg-zinc-800/40;
+		}
+	}
+}
+
+@theme inline {
+	--background-image: var(--background-image);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-geist-sans);
+	--font-mono: var(--font-geist-mono);
+	--color-container: var(--container); /* new */
+	--color-accent: var(--accent);
+	--color-accent-neg: var(--accent-neg);
+	--color-accent-neg-dark: var(--accent-neg-dark);
+	--color-secondary: var(--secondary);
+	--color-primary: var(--primary);
+	--color-XXX: var(--XXX);
+	--color-YYY: var(--YYY);
+
+	--color-outline: var(--outline);
+	--color-border: var(--border);
+	/* --surface-border: var(--surface-border); */
+	/* --surface-outline: var(--surface-outline); */
+	/* --color-surface-border: var(--surface-border);
+	--color-surface-outline: var(--surface-outline); */
+}
+@media (prefers-color-scheme: dark) {
+	/*todo: can be removed if not used  */
+}
+
+body {
+	/* default settings */
+	background-color: var(--background);
+	background-image: var(--background-image);
+	background-repeat: no-repeat;
+	background-size: cover;
+	color: var(--foreground);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+	.container {
+		/* @apply max-w-7xl mx-auto border-0 bg-container rounded-3xl sm:p-2.5 lg:p-2; */
+		@apply max-w-7xl mx-auto border-0 bg-container sm:p-2.5 lg:p-2;
+		/* @apply rounded-4xl; */
+	}
+
+	.glass {
+		/* @apply backdrop-blur-md bg-background/40 text-YYY border-container/20 border-t-container/40  border-l-container/40  border; */
+		@apply backdrop-blur-md;
+		@apply backdrop-blur-xl;
+		/* @apply bg-container/40; */
+		/* @apply border border-container/20 border-t-container/40 border-l-container/40; */
+		/* @apply border border-background/40 border-t-background/60 border-l-background/60; */
+		/*  */
+		/* @apply border border-container/20 border-t-container/40 border-l-container/40;
+		@apply outline-background/50 -outline-offset-1; */
+		@apply outline-1;
+		/*  */
+		@apply border border-border/20 border-t-border/40 border-l-border/40;
+		@apply outline-outline/50 -outline-offset-1;
+		/*? remove this ? */
+		--glass-opacity: 0;
+		--glass-reflect-opacity: 0;
+		background-image: none !important;
+	}
+	/* level-x: describes how many child-levels the current div is - it will adjust the rounded based on that  */
+	.glass.container.level-1 {
+		@apply bg-container/40;
+	}
+
+	.glass.container.level-2 {
+		/* @apply bg-background/40; */
+		@apply bg-background/30;
+		/* @apply backdrop-blur-2xl; */
+		@apply backdrop-blur-lg;
+		/* @apply bg-background/20; */
+	}
+
+	.backdrop-blur-support {
+		-webkit-backdrop-filter: blur(18px);
+		backdrop-filter: blur(18px);
+	}
+
+	.container.level-1 {
+		@apply rounded-3xl;
+	}
+	.container.level-2 {
+		@apply rounded-2xl;
+	}
+	.container.level-3 {
+		@apply rounded-xl;
+	}
+
+	.checkbox,
+	.checkbox::before,
+	.checkbox::after {
+		transition: none !important;
+		animation: none !important;
+	}
+}
+
+/* 
+	--color-surface-white-primary: rgba(245, 245, 245, 0.35);
+	--color-surface-white-secondary: rgba(245, 245, 245, 0.70);
+	--color-surface-white-tertiary: #dddbd4;
+	--color-surface-white-12-primary: rgba(255,255,255,0.12);
+	--color-surface-white-12-secondary: rgba(255,255,255,0.22);
+	--color-surface-white-4-primary: rgba(255,255,255,0.04);
+	--color-surface-white-4-secondary: rgba(255,255,255,0.12);
+	
+	--color-text-white-translucent-primary: rgba(255,255,255,0.65);
+	--color-text-white-translucent-secondary: rgba(255,255,255,0.85);
+	
+	--color-surface-grey-primary: rgb(97 97 97 / 35%);
+	--color-surface-grey-secondary: rgb(47 46 46 / 80%);
+	--color-surface-grey-tertiary: #121212;
+
+	--color-surface-black-primary: rgb(0 0 0 / 25%);
+	--color-surface-black-secondary: rgb(0 0 0 / 50%);
+	--color-surface-black-tertiary: #121212; 
+	*/
