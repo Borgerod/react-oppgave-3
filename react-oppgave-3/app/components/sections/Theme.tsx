@@ -6,10 +6,10 @@ export default function Todo() {
 		<section
 			className={cn(
 				"@Container",
-				"container level-1 ",
+				"container level-1",
 				"grid",
-				"grid-cols-2 ",
-				"bg-black/90 dark:bg-foreground",
+				"grid-cols-2",
+				"bg-background/90 dark:bg-foreground",
 				"col-start-1 col-span-2 row-start-4 row-span-1",
 				"text-secondary font-extralight text-xl p-7",
 				""
