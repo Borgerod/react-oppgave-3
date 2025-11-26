@@ -9,6 +9,7 @@ import useTodos from "@/app/hooks/useTodos";
 import TodoList from "@/app/components/sections/TodoList";
 import TodoForm from "@/app/components/sections/TodoForm";
 import Theme from "@/app/components/sections/Theme";
+// TODO [ ]: Add mobile layout: themebutton stick to bottom, form as header, list as body.
 
 interface Todo {
 	id: string;
