@@ -47,13 +47,20 @@ export default function Todo() {
 	return (
 		<main
 			className={cn(
+				"@Container",
 				"flex flex-col",
-				"sm:items-center",
+				// "sm:items-center",
+				// "items-center",
 				"justify-center",
 				"w-full max-w-3xl min-w-xl",
 				"min-h-screen",
 				"h-screen",
-				"",
+				//
+
+				"max-sm:justify-between",
+				"max-sm:min-w-0",
+				"max-sm:max-w-full",
+				"max-sm:overflow-hidden",
 				""
 			)}
 		>
@@ -67,7 +74,18 @@ export default function Todo() {
 					"gap-5",
 					"h-200",
 					"w-full",
-					"bg-transparent"
+					"bg-transparent",
+					//
+
+					"max-sm:grid-cols-1",
+					"max-sm:h-full",
+					"max-sm:grid-rows-[auto_1fr]",
+					"max-sm:p-0",
+					"max-sm:p-3", //> temp
+					"max-sm:overflow-x-hidden",
+					"max-sm:gap-3",
+					"max-sm:gap-0",
+					""
 				)}
 			>
 				{/*//* ___ TODO FORM __________________________________________________________________________________________________ */}

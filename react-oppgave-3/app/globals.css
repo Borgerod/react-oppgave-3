@@ -135,7 +135,12 @@ body {
 	.container {
 		/* @apply max-w-7xl mx-auto border-0 bg-container rounded-3xl sm:p-2.5 lg:p-2; */
 		@apply max-w-7xl mx-auto border-0 bg-container sm:p-2.5 lg:p-2;
+		/* @apply max-w-7xl mx-auto border-0 bg-container sm:p-12.5 lg:p-2; */
 		/* @apply rounded-4xl; */
+		/* @apply sm: col-span-full; */
+		/* @apply: ;
+		@apply: ;
+		@apply: md:col-span-full; */
 	}
 
 	.glass {

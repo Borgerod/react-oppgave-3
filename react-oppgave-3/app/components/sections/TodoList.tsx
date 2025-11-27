@@ -33,11 +33,30 @@ export default function TodoList({
 				"@Container",
 				"container level-1",
 				"grid",
+				"relative",
 				"col-start-3 col-span-full row-start-1 row-span-4",
 				"grid-cols-subgrid grid-rows-subgrid",
 				"grid-cols-3 grid-rows-subgrid",
 				"max-w-300 min-w-50",
-				"gap-0"
+				"gap-0",
+				//
+				// max-sm responsive adjustments
+				"max-sm:col-start-1",
+				"max-sm:col-span-full",
+				"max-sm:row-start-2",
+				"max-sm:row-span-1",
+				// "max-sm:row-start-1",
+				"max-sm:row-span-full",
+				"max-sm:grid max-sm:grid-cols-3 max-sm:grid-rows-[1fr]",
+				"max-sm:w-full",
+				"max-sm:min-h-0",
+				"max-sm:overflow-hidden",
+				"max-sm:max-w-full max-sm:min-w-0",
+				"max-sm:p-2.5",
+				// "max-sm:bg-container/60",
+				// "max-sm:backdrop-blur-xl",
+				"",
+				""
 			)}
 		>
 			<div
@@ -47,6 +66,15 @@ export default function TodoList({
 					"items-start place-content-start",
 					"py-5",
 					"gap-2",
+					//
+					// max-sm responsive adjustments for inner container
+					"max-sm:grid max-sm:grid-cols-3 max-sm:auto-rows-min",
+					"max-sm:w-full",
+					"max-sm:min-h-0",
+					"max-sm:overflow-y-auto max-sm:overflow-x-hidden",
+					// "max-sm:px-4",
+					"max-sm:pb-16",
+					"",
 					""
 				)}
 			>
@@ -54,7 +82,10 @@ export default function TodoList({
 					className={cn(
 						"row-start-1 col-start-1 col-span-full",
 						"grid grid-cols-subgrid grid-rows-subgrid",
-						"",
+						// max-sm responsive adjustments for header
+						// "max-sm:grid max-sm:grid-cols-2",
+						"max-sm:grid max-sm:grid-cols-3",
+						"max-sm:w-full max-sm:mb-4",
 						""
 					)}
 				>
@@ -79,6 +110,7 @@ export default function TodoList({
 							"justify-items-center",
 							"content-center",
 							" relative",
+							"max-sm:pr-2",
 							""
 						)}
 					>
@@ -97,6 +129,7 @@ export default function TodoList({
 								"text-background",
 								"bg-foreground",
 								"",
+
 								"col-start-1 col-span-2",
 								"stroke-0 border-none outline-none ring-offset-none decoration-0",
 								""
@@ -192,7 +225,22 @@ export default function TodoList({
 					/>
 				))}
 			</div>
-			<StylizedCircle className="grid row-start-2 row-span-2 col-start-1 col-span-full m-10" />
+			{/* <StylizedCircle className="grid row-start-2 row-span-2 col-start-1 col-span-full m-10 max-sm:row-start-1 max-sm:row-span-full max-sm:col-start-1 max-sm:col-span-full max-sm:place-self-center max-sm:m-0 max-sm:z-0" /> */}
+			<StylizedCircle
+				className={cn(
+					"grid row-start-2 row-span-2 col-start-1 col-span-full m-10",
+					//
+					"max-sm:row-start-1",
+					"max-sm:row-span-full",
+					"max-sm:col-start-1",
+					"max-sm:col-span-full",
+					"max-sm:self-center",
+					"max-sm:z-10",
+					"",
+					""
+				)}
+			/>
+
 			<div
 				className={cn(
 					"@Container",
@@ -202,6 +250,10 @@ export default function TodoList({
 					"flex flex-col ",
 					"items-center",
 					"",
+					// max-sm responsive adjustments
+					"max-sm:col-start-1 max-sm:col-span-1",
+					"max-sm:row-start-1 max-sm:row-span-full",
+					"max-sm:z-1",
 					""
 				)}
 			></div>
@@ -225,6 +277,9 @@ export default function TodoList({
 					"self-end",
 					"justify-self-end",
 					"stroke-0 border-none outline-none ring-offset-none decoration-0",
+					// max-sm responsive adjustments for Clear button
+					"max-sm:fixed max-sm:bottom-5 max-sm:right-5",
+					"max-sm:hidden",
 					""
 				)}
 			>

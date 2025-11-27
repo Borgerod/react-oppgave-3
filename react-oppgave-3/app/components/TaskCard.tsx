@@ -128,16 +128,17 @@ export default function TaskCard({
 				<fieldset
 					className={cn(
 						"fieldset",
-						"w-xs ",
+						"w-full",
 						"ml-2",
 						"col-start-2 col-span-1 ",
 						"text-primary ",
-						"select-none text-nowrap",
+						"select-none",
 						" justify-self-start",
 						"self-center",
 						"bg-container/20 rounded-xl ",
-						"w-full px-2 ",
+						"px-2 ",
 						"container level-3 glass",
+						"overflow-hidden",
 						task.completed ? "line-through text-primary/50" : "",
 						""
 					)}
