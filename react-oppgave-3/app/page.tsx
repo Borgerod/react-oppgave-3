@@ -1,5 +1,4 @@
 import Link from "next/link";
-//TODO change favicon
 export default function Home() {
 	return (
 		// <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
@@ -39,8 +38,7 @@ export default function Home() {
 				<div className="grid gap-4 sm:grid-cols-2">
 					<Link
 						className="rounded-lg border border-slate-800 bg-slate-900/40 p-6 transition hover:border-slate-600"
-						href="/todo"
-					>
+						href="/todo">
 						<p className="text-sm uppercase tracking-wide text-slate-400">
 							Task board
 						</p>

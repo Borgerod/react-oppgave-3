@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import TaskCard from "@/app/components/TaskCard";
 import { StylizedCircle } from "@/app/components/accessories/StylizedCircle";
 import { cn } from "@/app/lib/utils";
 import Button from "../Button";
 import PeriodSelect from "./PeriodSelect";
-import { FiChevronDown } from "react-icons/fi";
+// import { FiChevronDown } from "react-icons/fi";
 import { getCurrentDate } from "@/app/lib/getDate";
 
 interface Todo {
@@ -22,6 +22,8 @@ interface TodoListProps {
 	onToggle: (id: string) => void;
 	onEdit: (id: string, newText: string) => void;
 	onClear?: () => void;
+	period?: string;
+	onPeriodChange?: (v: string) => void;
 }
 
 export default function TodoList({
@@ -30,12 +32,180 @@ export default function TodoList({
 	onToggle,
 	onEdit,
 	onClear,
+	period,
+	onPeriodChange,
 }: TodoListProps) {
-	const { dayName, dayOrdinal } = getCurrentDate();
+	const containerRef = useRef<HTMLElement | null>(null);
+	const dragging = useRef(false);
+	const startXRef = useRef(0);
+	const startWidthRef = useRef(0);
+	const [width, setWidth] = useState<number | undefined>(undefined);
+	const [isMobile, setIsMobile] = useState(false);
+
+	// const MIN_WIDTH = 200; // px
+	const MIN_WIDTH = 310; // px
+	const MAX_WIDTH =
+		typeof window !== "undefined"
+			? Math.max(600, window.innerWidth - 100)
+			: 2000;
+
+	const pointerHandlersRef = useRef<{
+		move?: EventListener;
+		up?: EventListener;
+	}>({});
+
+	const onPointerMove = useCallback(
+		(e: PointerEvent) => {
+			if (!dragging.current) return;
+			const delta = e.clientX - startXRef.current;
+			const newW = Math.max(
+				MIN_WIDTH,
+				Math.min(MAX_WIDTH, startWidthRef.current + delta)
+			);
+			setWidth(newW);
+		},
+		[MIN_WIDTH, MAX_WIDTH]
+	);
+
+	const onPointerUp = useCallback(() => {
+		dragging.current = false;
+		if (pointerHandlersRef.current.move)
+			window.removeEventListener(
+				"pointermove",
+				pointerHandlersRef.current.move
+			);
+		if (pointerHandlersRef.current.up)
+			window.removeEventListener(
+				"pointerup",
+				pointerHandlersRef.current.up
+			);
+		pointerHandlersRef.current = {};
+	}, []);
+
+	useEffect(() => {
+		function updateSizes() {
+			const mobile =
+				typeof window !== "undefined"
+					? window.innerWidth <= 640
+					: false;
+			setIsMobile(mobile);
+			if (!mobile && containerRef.current) {
+				const rect = containerRef.current.getBoundingClientRect();
+				setWidth(rect.width);
+			} else {
+				// on mobile let layout be responsive (no fixed width)
+				setWidth(undefined);
+			}
+			if (mobile && dragging.current) {
+				// if switching to mobile while dragging, stop dragging and remove listeners
+				onPointerUp();
+			}
+		}
+
+		updateSizes();
+
+		function onResize() {
+			updateSizes();
+			const mobileNow =
+				typeof window !== "undefined"
+					? window.innerWidth <= 640
+					: false;
+			if (!mobileNow) {
+				setWidth((w) => {
+					if (!w) return w;
+					return Math.min(
+						Math.max(w, MIN_WIDTH),
+						window.innerWidth - 100
+					);
+				});
+			}
+		}
+
+		window.addEventListener("resize", onResize);
+		return () => window.removeEventListener("resize", onResize);
+	}, [onPointerUp]);
+
+	function onPointerDown(e: React.PointerEvent) {
+		// don't start resizing when in mobile mode
+		if (isMobile) return;
+		e.preventDefault();
+		if (e.pointerType === "mouse" || e.pointerType === "touch") {
+			dragging.current = true;
+			startXRef.current = e.clientX;
+			startWidthRef.current =
+				containerRef.current?.getBoundingClientRect().width || 0;
+			pointerHandlersRef.current.move = onPointerMove as EventListener;
+			pointerHandlersRef.current.up = onPointerUp as EventListener;
+			window.addEventListener(
+				"pointermove",
+				pointerHandlersRef.current.move
+			);
+			window.addEventListener("pointerup", pointerHandlersRef.current.up);
+		}
+	}
+
+	const { dayName: todayName, dayOrdinal: todayOrdinal } = getCurrentDate();
+
+	function ordinal(n: number) {
+		const s = ["th", "st", "nd", "rd"];
+		const v = n % 100;
+		if (v >= 11 && v <= 13) return `${n}th`;
+		const t = n % 10;
+		return `${n}${s[t] || s[0]}`;
+	}
+
+	function getISOWeekNumber(d: Date) {
+		const date = new Date(
+			Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+		);
+		// Thursday in current week decides the year.
+		date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+		const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+		const weekNo = Math.ceil(
+			((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+		);
+		return weekNo;
+	}
+
+	const now = new Date();
+	const tomorrow = new Date(
+		now.getFullYear(),
+		now.getMonth(),
+		now.getDate() + 1
+	);
+
+	// headerPrimary = main title, headerSecondary = subtitle (ordinal)
+	let headerPrimary = todayName;
+	let headerSecondary = todayOrdinal;
+
+	if (period === "tomorrow") {
+		const name = tomorrow.toLocaleDateString(undefined, {
+			weekday: "short",
+		});
+		headerPrimary = name;
+		headerSecondary = ordinal(tomorrow.getDate());
+	} else if (period === "this week") {
+		const wn = getISOWeekNumber(now);
+		headerPrimary = `Week ${wn}`;
+		headerSecondary = "";
+	} else if (period === "this month") {
+		let m = now.toLocaleDateString(undefined, { month: "short" });
+		// add a dot like `Dec.` if not present
+		if (!m.endsWith(".")) m = `${m}.`;
+		headerPrimary = m;
+		headerSecondary = "";
+	} else if (period === "all") {
+		headerPrimary = "All";
+		headerSecondary = "";
+	}
 	if (!Array.isArray(todos)) return null;
 
 	return (
 		<section
+			ref={(el) => {
+				containerRef.current = el;
+			}}
+			style={{ width: width ? `${width}px` : undefined }}
 			className={cn(
 				"@Container",
 				"container level-1",
@@ -66,8 +236,7 @@ export default function TodoList({
 				// "max-sm:backdrop-blur-xl",
 				"",
 				""
-			)}
-		>
+			)}>
 			<div
 				className={cn(
 					"z-10 col-start-1 row-start-1 col-span-full row-span-full ",
@@ -90,8 +259,7 @@ export default function TodoList({
 					"max-sm:pb-20",
 					"",
 					""
-				)}
-			>
+				)}>
 				<div
 					className={cn(
 						"row-start-1 col-start-1 col-span-full",
@@ -102,8 +270,7 @@ export default function TodoList({
 						"max-sm:w-full max-sm:mb-4",
 						"",
 						""
-					)}
-				>
+					)}>
 					<div
 						className={cn(
 							"flex flex-col",
@@ -111,15 +278,17 @@ export default function TodoList({
 							"text-left",
 							"row-start-1 col-start-1 col-span-1",
 							"relative z-50 max-sm:z-50"
-						)}
-					>
-						<h1 className="text-3xl text-primary"> {dayName} </h1>
+						)}>
+						<h1 className="text-3xl text-primary">
+							{" "}
+							{headerPrimary}{" "}
+						</h1>
 						<h1 className="text-3xl text-primary/30">
 							{" "}
-							{dayOrdinal}{" "}
+							{headerSecondary}{" "}
 						</h1>
 					</div>
-					<PeriodSelect />
+					<PeriodSelect value={period} onChange={onPeriodChange} />
 				</div>
 				{/* {todos.map((t) => (
 					<TaskCard
@@ -139,8 +308,7 @@ export default function TodoList({
 
 						"",
 						""
-					)}
-				>
+					)}>
 					{todos.map((t) => (
 						<TaskCard
 							key={t.id}
@@ -183,8 +351,7 @@ export default function TodoList({
 					"max-sm:row-start-1 max-sm:row-span-full",
 					"max-sm:z-15",
 					""
-				)}
-			></div>
+				)}></div>
 			<Button
 				type="solid"
 				shape="pill"
@@ -210,10 +377,21 @@ export default function TodoList({
 					"max-sm:hidden",
 					""
 				)}
-				onClick={() => onClear && onClear()}
-			>
+				onClick={() => onClear && onClear()}>
 				Clear
 			</Button>
+			{/* draggable resize handle (disabled and not rendered in mobile mode) */}
+			{!isMobile && (
+				<div
+					role="separator"
+					aria-orientation="vertical"
+					onPointerDown={onPointerDown}
+					className={cn(
+						"absolute top-0 right-0 h-full w-3",
+						"cursor-col-resize z-40 bg-transparent hover:bg-foreground/10"
+					)}
+				/>
+			)}
 		</section>
 	);
 }

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 
 import "./globals.css";
+import "react-datepicker/dist/react-datepicker.css";
 import { cn } from "./lib/utils";
 
 const geistSans = Geist({
@@ -32,8 +33,7 @@ export default function RootLayout({
 					"bg-background-image dark:bg-background-image",
 					"bg-contain",
 					""
-				)}
-			>
+				)}>
 				<ThemeProvider attribute="class" defaultTheme="system">
 					{children}
 				</ThemeProvider>

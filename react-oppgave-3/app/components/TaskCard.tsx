@@ -1,6 +1,8 @@
+"use client";
 import { cn } from "@/app/lib/utils";
 import React, { useState } from "react";
 import { formatTimestamp } from "@/app/lib/formatTimeStamp";
+import { useUserLocale } from "@/app/hooks/useUserLocale";
 import { IoIosClose } from "react-icons/io";
 
 interface Todo {
@@ -25,6 +27,7 @@ export default function TaskCard({
 	onToggle,
 	onEdit,
 }: TaskCardProps) {
+	const { locale } = useUserLocale();
 	const [isEditing, setIsEditing] = useState(false);
 	const [newText, setNewText] = useState<string>(task.title || "");
 
@@ -41,8 +44,7 @@ export default function TaskCard({
 			<div className="border border-/40 rounded-md flex flex-row flex-nowrap bg-gray-800 text-white/50">
 				<form
 					onSubmit={onSubmit}
-					className="flex w-full items-center gap-2 p-2"
-				>
+					className="flex w-full items-center gap-2 p-2">
 					<input
 						type="text"
 						value={newText}
@@ -52,8 +54,7 @@ export default function TaskCard({
 					/>
 					<button
 						type="submit"
-						className="px-3 py-1 bg-primary rounded"
-					>
+						className="px-3 py-1 bg-primary rounded">
 						Save
 					</button>
 					<button
@@ -62,8 +63,7 @@ export default function TaskCard({
 						onClick={() => {
 							setNewText(task.title);
 							setIsEditing(false);
-						}}
-					>
+						}}>
 						Cancel
 					</button>
 				</form>
@@ -80,8 +80,7 @@ export default function TaskCard({
 				"self-start",
 				"relative z-50 max-sm:z-50",
 				""
-			)}
-		>
+			)}>
 			<div
 				className={cn(
 					"h-5",
@@ -91,8 +90,7 @@ export default function TaskCard({
 					"col-start-1 col-span-1",
 					"flex",
 					""
-				)}
-			>
+				)}>
 				<input
 					type="checkbox"
 					checked={task.completed}
@@ -129,8 +127,7 @@ export default function TaskCard({
 					"flex flex-row w-full",
 
 					""
-				)}
-			>
+				)}>
 				<fieldset
 					className={cn(
 						"fieldset",
@@ -145,22 +142,67 @@ export default function TaskCard({
 						"px-2 ",
 						"container level-3 glass",
 						"backdrop-blur-support",
-						"overflow-hidden",
+						"overflow-visible",
 						task.completed ? "line-through text-primary/50" : "",
 						""
-					)}
-				>
-					<div className="flex flex-col overflow-hidden">
-						{task.title}
-						{/* <p className="label">
-							added: {formatTimestamp(task.createdAt)}
-						</p> */}
-						<p className="label">
-							due: {formatTimestamp(task.due)}
-						</p>
-						<p className="label">
-							dor: {formatTimestamp(task.for)}
-						</p>
+					)}>
+					<div className="flex flex-col overflow-hidden min-w-0">
+						<div className="overflow-hidden whitespace-nowrap font-medium">
+							{task.title}
+						</div>
+						<div className="flex gap-0.5 mt-0.5 items-center text-[9px] min-w-0 overflow-visible justify-evenly">
+							<div className="label flex items-center gap-0.5 min-w-0">
+								<span className="text-[9px] text-primary/70">
+									For:
+								</span>
+								<time
+									className="inline-flex items-center gap-0.5 px-1  rounded-full bg-primary/10 border border-primary/10 text-[9px] text-primary/90 max-w-24 truncate"
+									title={
+										task.for
+											? new Date(
+													task.for
+											  ).toLocaleString()
+											: ""
+									}
+									dateTime={
+										task.for
+											? new Date(task.for).toISOString()
+											: ""
+									}>
+									{formatTimestamp(task.for, {
+										locale,
+										showTime: false,
+										showYear: false,
+									})}
+								</time>
+							</div>
+
+							<div className="label flex items-center gap-0.5 min-w-0">
+								<span className="text-[9px] text-primary/70">
+									Due:
+								</span>
+								<time
+									className="inline-flex items-center justify-center text-center gap-0.5 px-1 py-0.5 rounded-full bg-primary/10 border border-primary/10 text-[9px] text-primary/90 leading-none max-w-24 truncate"
+									title={
+										task.due
+											? new Date(
+													task.due
+											  ).toLocaleString()
+											: ""
+									}
+									dateTime={
+										task.due
+											? new Date(task.due).toISOString()
+											: ""
+									}>
+									{formatTimestamp(task.due, {
+										locale,
+										showTime: false,
+										showYear: false,
+									})}
+								</time>
+							</div>
+						</div>
 					</div>
 					<button
 						type="button"
@@ -175,8 +217,7 @@ export default function TaskCard({
 							"p-0 -mx-1.5 -my-1",
 							""
 						)}
-						aria-label="Delete task"
-					>
+						aria-label="Delete task">
 						<IoIosClose className="" />
 					</button>
 				</fieldset>

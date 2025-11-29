@@ -11,7 +11,8 @@ export const StylizedCircle: React.FC<StylizedCircleProps> = ({
 	colorRange = "bg-transparent bg-radial-[at_25%_25%]  to-90% from-30% from-accent-neg to-accent-neg-dark/70",
 	...props
 }) => {
-	const defaultSettings = "rounded-full aspect-square bg-accent";
+	const defaultSettings =
+		"rounded-full aspect-square bg-accent max-w-full max-h-full overflow-hidden pointer-events-none";
 	return (
 		<div
 			className={cn(

@@ -4,14 +4,109 @@ import {
 	FormEvent,
 	Dispatch,
 	SetStateAction,
-	useEffect,
 	useRef,
+	useMemo,
 } from "react";
 import { cn } from "@/app/lib/utils";
 import Button from "../Button";
 import TodoFilters from "../TodoFilters";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+// import useUserLocale from "@/app/hooks/useUserLocale";
+import { useUserLocale } from "@/app/hooks/useUserLocale";
+import { formatTimestamp, deriveDateFormat } from "@/app/lib/formatTimeStamp";
 
+import { IoChevronDownOutline, IoChevronUpOutline } from "react-icons/io5";
+
+type DateFieldProps = {
+	label: string;
+	value: string;
+	setValue: (v: string) => void;
+	locale: string;
+};
+
+// function DateField({ label, value, setValue, locale }: DateFieldProps) {
+// 	return (
+// 		<div className="flex flex-col">
+// 			<label className="sr-only">{label}</label>
+// 			<div>{locale}</div>
+// 			<div className="relative w-full">
+// 				<input
+// 					type="date"
+// 					value={value || ""}
+// 					onChange={(e) => setValue(e.target.value)}
+// 					className="input bg-background/20 rounded-full text-primary/60 placeholder:text-primary/60 w-full cursor-pointer pointer-events-auto z-10"
+// 				/>
+// 			</div>
+// 		</div>
+// 	);
+// }
+import DatePicker from "react-datepicker";
+
+// function DateField({ label, value, setValue, locale }: DateFieldProps) {
+// 	return (
+// 		<div className="date-picker-wrapper">
+// 			<label className="sr-only">{label}</label>
+// 			<DatePicker
+// 				selected={value ? new Date(value) : null}
+// 				onChange={(date) =>
+// 					setValue(date?.toISOString().split("T")[0] || "")
+// 				}
+// 				locale={locale}
+// 				dateFormat={dateFormat}
+// 				placeholderText={label}
+// 				className={cn(
+// 					"input",
+// 					"bg-background/40",
+// 					"rounded-full border border-transparent",
+// 					"focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/40",
+// 					"rounded-full",
+// 					"text-primary/60 text-center",
+// 					"stroke-0",
+// 					"border-0",
+// 					"outline-0",
+// 					""
+// 				)}
+// 			/>
+// 		</div>
+// 	);
+// }
+function DateField({
+	label,
+	value,
+	setValue,
+	locale: passedLocale,
+}: DateFieldProps) {
+	const { locale: geoLocale } = useUserLocale();
+
+	const locale = passedLocale || geoLocale || "en-US";
+
+	// Determine date format based on locale using deriveDateFormat
+	const dateFormat = deriveDateFormat(locale);
+	return (
+		<div className="date-picker-wrapper">
+			<label className="sr-only">{label}</label>
+			<DatePicker
+				selected={value ? new Date(value) : null}
+				onChange={(date) =>
+					setValue(date?.toISOString().split("T")[0] || "")
+				}
+				locale={locale}
+				dateFormat={dateFormat}
+				placeholderText={label}
+				className={cn(
+					"input",
+					"bg-background/40",
+					"rounded-full border border-transparent",
+					"focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/40",
+					"rounded-full",
+					"text-primary/60 text-center",
+					"stroke-0",
+					"border-0",
+					"outline-0"
+				)}
+			/>
+		</div>
+	);
+}
 type TodoFormProps = {
 	onAdd: (text: string, forDate?: number, dueDate?: number) => void;
 	filter: string;
@@ -27,84 +122,33 @@ export default function TodoForm({
 	setFilter,
 	sortOrder,
 	setSortOrder,
-	onClear,
+	onClear: _onClear,
 }: TodoFormProps) {
 	const [text, setText] = useState<string>("");
 	const [showDates, setShowDates] = useState<boolean>(false);
-	// date inputs are unmanaged; flatpickr will control the displayed value
-	const forDateRef = useRef<HTMLInputElement | null>(null);
-	const dueDateRef = useRef<HTMLInputElement | null>(null);
+	const [forDate, setForDate] = useState<string>("");
+	const [dueDate, setDueDate] = useState<string>("");
+	// const locale = useUserLocale();
+	const { locale } = useUserLocale();
 
-	useEffect(() => {
-		let fp1: any = null;
-		let fp2: any = null;
-		let mounted = true;
-		(async () => {
-			if (!mounted) return;
-			try {
-				const fpModule = await import("flatpickr");
-				const flatpickr = fpModule.default ?? fpModule;
-				// load norwegian locale and localize
-				// @ts-ignore - dynamic import of flatpickr locale (no types)
-				const localeMod = await import("flatpickr/dist/l10n/nb.js");
-				const locale = localeMod.default ?? localeMod;
-				// locale may export an object with key 'nb'
-				const nbLocale = locale.nb ?? locale;
-				if (
-					flatpickr &&
-					nbLocale &&
-					typeof flatpickr.localize === "function"
-				) {
-					flatpickr.localize(nbLocale);
-				}
+	// formatting is handled centrally by formatTimestamp
 
-				const options = {
-					dateFormat: "d.m.Y",
-					allowInput: true,
-					locale: nbLocale,
-				};
-				if (forDateRef.current)
-					fp1 = flatpickr(forDateRef.current as any, options);
-				if (dueDateRef.current)
-					fp2 = flatpickr(dueDateRef.current as any, options);
-			} catch (err) {
-				// fail silently — browser input will still work
-			}
-		})();
+	// keep incoming `onClear` prop for callers; not used here
+	void _onClear;
+	// add-dates feature removed: no flatpickr or date refs
 
-		return () => {
-			mounted = false;
-			try {
-				if (fp1 && typeof fp1.destroy === "function") fp1.destroy();
-				if (fp2 && typeof fp2.destroy === "function") fp2.destroy();
-			} catch (e) {}
-		};
-	}, []);
-
-	const parseDateString = (s?: string) => {
-		if (!s) return undefined;
-		// ISO yyyy-mm-dd
-		if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s).getTime();
-		// norwegian dd.mm.yyyy
-		if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) {
-			const [dd, mm, yyyy] = s.split(".").map(Number);
-			return new Date(yyyy, mm - 1, dd).getTime();
-		}
-		const parsed = Date.parse(s);
-		return Number.isNaN(parsed) ? undefined : parsed;
-	};
+	// no date parsing required when add-dates removed
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (text.trim()) {
-			const forVal = forDateRef.current?.value;
-			const dueVal = dueDateRef.current?.value;
-			const forDate = parseDateString(forVal);
-			const dueDate = parseDateString(dueVal);
-			onAdd(text, forDate, dueDate);
+			// convert YYYY-MM-DD -> timestamp (ms) when provided
+			const forTs = forDate ? new Date(forDate).getTime() : undefined;
+			const dueTs = dueDate ? new Date(dueDate).getTime() : undefined;
+			onAdd(text, forTs, dueTs);
 			setText("");
-			if (forDateRef.current) forDateRef.current.value = "";
-			if (dueDateRef.current) dueDateRef.current.value = "";
+			setForDate("");
+			setDueDate("");
 			setShowDates(false);
 		}
 	};
@@ -132,8 +176,7 @@ export default function TodoForm({
 					"max-sm:hidden",
 					"",
 					""
-				)}
-			>
+				)}>
 				{/*//* Title */}
 				<h1 className="text-2xl font-light text-primary/50">To Do</h1>
 
@@ -143,8 +186,7 @@ export default function TodoForm({
 					aria-label="Add todo form"
 					className={cn(
 						"flex flex-col gap-5 text-secondary w-full mt-auto"
-					)}
-				>
+					)}>
 					<label htmlFor="todo-input" className="sr-only">
 						Add todo
 					</label>
@@ -156,8 +198,7 @@ export default function TodoForm({
 								"text-primary/80",
 								"tracking-widest",
 								""
-							)}
-						>
+							)}>
 							Add Task
 						</h3>
 
@@ -173,8 +214,7 @@ export default function TodoForm({
 								"border-0",
 								"outline-0",
 								""
-							)}
-						>
+							)}>
 							{/* Task */}
 							<input
 								id="todo-input"
@@ -205,60 +245,51 @@ export default function TodoForm({
 										"shrink-0",
 										"stroke-0 border-none outline-none ring-offset-none decoration-0",
 										""
-									)}
-								>
+									)}>
 									Add
 								</Button>
 							</span>
 						</label>
-					</div>
 
-					{/* Chevron toggle - show/hide extra date fields */}
-					<div className="flex items-center justify-start mt-1">
-						<button
-							type="button"
-							onClick={() => setShowDates((s) => !s)}
-							aria-expanded={showDates}
-							className="flex items-center gap-2 p-1 text-primary/70"
-						>
-							{showDates ? <IoIosArrowUp /> : <IoIosArrowDown />}
-							<span className="label">Add dates</span>
-						</button>
-					</div>
+						{/* Chevron toggle for dates (moved below the input) */}
+						<div className="mt-0">
+							<button
+								type="button"
+								aria-expanded={showDates}
+								onClick={() => setShowDates((s) => !s)}
+								className={cn(
+									"flex justify-center w-full",
+									"ml-0",
+									"text-sm text-primary/70",
+									"hover:text-primary",
+									"transition-transform"
+									// showDates ? "rotate-180" : "rotate-0"
+								)}>
+								{showDates ? (
+									<IoChevronDownOutline />
+								) : (
+									<IoChevronUpOutline />
+								)}
+							</button>
 
-					{/* Expandable date row */}
-					{showDates && (
-						<div className="grid grid-cols-2 gap-3 mt-2">
-							<label className="flex flex-col">
-								<span className="label text-primary/70">
-									SetForDate
-								</span>
-								<input
-									ref={forDateRef}
-									type="text"
-									lang="nb-NO"
-									placeholder="dd.mm.yyyy"
-									className={cn(
-										"input bg-background/40 rounded-md p-2 text-primary"
-									)}
-								/>
-							</label>
-							<label className="flex flex-col">
-								<span className="label text-primary/70">
-									SetDueDate
-								</span>
-								<input
-									ref={dueDateRef}
-									type="text"
-									lang="nb-NO"
-									placeholder="dd.mm.yyyy"
-									className={cn(
-										"input bg-background/40 rounded-md p-2 text-primary"
-									)}
-								/>
-							</label>
+							{showDates && (
+								<div className="flex gap-3 mt-0 items-center text-sm">
+									<DateField
+										label="For when"
+										value={forDate}
+										setValue={setForDate}
+										locale={locale}
+									/>
+									<DateField
+										label="Due date"
+										value={dueDate}
+										setValue={setDueDate}
+										locale={locale}
+									/>
+								</div>
+							)}
 						</div>
-					)}
+					</div>
 				</form>
 
 				{/*//* Filters */}
@@ -289,8 +320,7 @@ export default function TodoForm({
 					"justify-self-center",
 					"",
 					""
-				)}
-			>
+				)}>
 				{/*//* Title */}
 				<h1 className="text-2xl font-light text-primary/50">To Do</h1>
 
@@ -335,8 +365,7 @@ export default function TodoForm({
 					// "container level-1",
 					"",
 					""
-				)}
-			>
+				)}>
 				{/*//* Add Task field */}
 				<form
 					onSubmit={handleSubmit}
@@ -352,8 +381,7 @@ export default function TodoForm({
 
 						"",
 						""
-					)}
-				>
+					)}>
 					<label htmlFor="todo-input" className="sr-only">
 						Add todo
 					</label>
@@ -367,8 +395,7 @@ export default function TodoForm({
 							"p-5",
 							"",
 							""
-						)}
-					>
+						)}>
 						<label
 							className={cn(
 								"input",
@@ -385,8 +412,7 @@ export default function TodoForm({
 								"max-sm:shadow",
 								"",
 								""
-							)}
-						>
+							)}>
 							{/* Task */}
 							<input
 								id="todo-input"
@@ -417,12 +443,50 @@ export default function TodoForm({
 										"shrink-0",
 										"stroke-0 border-none outline-none ring-offset-none decoration-0",
 										""
-									)}
-								>
+									)}>
 									Add
 								</Button>
 							</span>
 						</label>
+
+						{/* Chevron toggle for dates (mobile, moved below input) */}
+						<div className="mt-2">
+							<button
+								type="button"
+								aria-expanded={showDates}
+								onClick={() => setShowDates((s) => !s)}
+								className={cn(
+									"ml-0",
+									"text-sm text-primary/70",
+									"hover:text-primary",
+									"transition-transform",
+									showDates ? "rotate-180" : "rotate-0"
+								)}>
+								<span className="sr-only">Toggle dates</span>
+								{showDates ? (
+									<IoChevronUpOutline aria-hidden="true" />
+								) : (
+									<IoChevronDownOutline aria-hidden="true" />
+								)}
+							</button>
+
+							{showDates && (
+								<div className="flex gap-3 mt-3 items-center text-sm">
+									<DateField
+										label="For date"
+										value={forDate}
+										setValue={setForDate}
+										locale={locale}
+									/>
+									<DateField
+										label="Due date"
+										value={dueDate}
+										setValue={setDueDate}
+										locale={locale}
+									/>
+								</div>
+							)}
+						</div>
 					</div>
 				</form>
 			</section>

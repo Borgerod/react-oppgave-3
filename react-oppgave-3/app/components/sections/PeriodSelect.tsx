@@ -5,10 +5,15 @@ import Button from "@/app/components/Button";
 import { FiChevronDown } from "react-icons/fi";
 import { cn } from "@/app/lib/utils";
 
-export default function PeriodSelect() {
+interface PeriodSelectProps {
+	value?: string;
+	onChange?: (v: string) => void;
+}
+
+export default function PeriodSelect({ value, onChange }: PeriodSelectProps) {
 	const OPTIONS = ["all", "today", "tomorrow", "this week", "this month"];
 
-	const [selected, setSelected] = useState<string>("today");
+	const [selected, setSelected] = useState<string>(value ?? "today");
 
 	function capitalizeWords(s: string) {
 		return s
@@ -17,7 +22,8 @@ export default function PeriodSelect() {
 			.join(" ");
 	}
 
-	const displayText = capitalizeWords(selected);
+	// prefer controlled value when provided
+	const displayText = capitalizeWords(value ?? selected);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -100,8 +106,7 @@ export default function PeriodSelect() {
 				"max-sm:pr-2",
 				"",
 				""
-			)}
-		>
+			)}>
 			<div
 				id="select-display"
 				className={cn(
@@ -121,8 +126,7 @@ export default function PeriodSelect() {
 					""
 				)}
 				role="button"
-				aria-label="Period: Today"
-			>
+				aria-label="Period: Today">
 				{displayText}
 			</div>
 
@@ -147,8 +151,7 @@ export default function PeriodSelect() {
 						"",
 						""
 					)}
-					onClick={() => setOpen((v) => !v)}
-				>
+					onClick={() => setOpen((v) => !v)}>
 					<FiChevronDown className="-rotate-90"></FiChevronDown>
 				</Button>
 
@@ -180,8 +183,7 @@ export default function PeriodSelect() {
 							"w-full",
 							"absolute top-(--popover-top) z-9999",
 							""
-						)}
-					>
+						)}>
 						{OPTIONS.map((opt) => {
 							const isSelected = opt === selected;
 							const optionClassName = cn(
@@ -200,9 +202,9 @@ export default function PeriodSelect() {
 										className={optionClassName}
 										onClick={() => {
 											setSelected(opt);
+											if (onChange) onChange(opt);
 											setOpen(false);
-										}}
-									>
+										}}>
 										{capitalizeWords(opt)}
 									</button>
 								);
@@ -216,9 +218,9 @@ export default function PeriodSelect() {
 										className={optionClassName}
 										onClick={() => {
 											setSelected(opt);
+											if (onChange) onChange(opt);
 											setOpen(false);
-										}}
-									>
+										}}>
 										{capitalizeWords(opt)}
 									</button>
 								);
@@ -242,8 +244,7 @@ export default function PeriodSelect() {
 					"grid grid-cols-1 grid-rows-2",
 					"",
 					""
-				)}
-			>
+				)}>
 				<div
 					className={cn(
 						"rounded-full",
@@ -254,8 +255,7 @@ export default function PeriodSelect() {
 						"mr-px",
 						"",
 						""
-					)}
-				></div>
+					)}></div>
 				<div
 					className={cn(
 						"rounded-full",
@@ -266,8 +266,7 @@ export default function PeriodSelect() {
 						"-z-1",
 						"",
 						""
-					)}
-				></div>
+					)}></div>
 				<div
 					className={cn(
 						"rounded-full",
@@ -278,8 +277,7 @@ export default function PeriodSelect() {
 						"mr-px",
 						"",
 						""
-					)}
-				></div>
+					)}></div>
 			</div>
 		</div>
 	);
