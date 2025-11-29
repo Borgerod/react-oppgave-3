@@ -5,21 +5,37 @@ interface Todo {
 	title: string;
 	completed: boolean;
 	createdAt: number;
+	due: number;
+	for: number;
 }
 
 export default function useTodos(
 	todos: Todo[],
 	setTodos: Dispatch<SetStateAction<Todo[]>>
 ) {
-	const createTask = (text: string): Todo => ({
-		id: crypto.randomUUID(),
-		title: text,
-		completed: false,
-		createdAt: Date.now(),
-	});
+	const createTask = (
+		text: string,
+		forDate?: number,
+		dueDate?: number
+	): Todo => {
+		const created = Date.now();
+		const _for = forDate ?? created;
+		const _due = dueDate ?? created;
+		return {
+			id: crypto.randomUUID(),
+			title: text,
+			completed: false,
+			createdAt: created,
+			for: _for,
+			due: _due,
+		};
+	};
 
-	const addTask = (text: string) => {
-		setTodos((prev: Todo[]) => [...prev, createTask(text)]);
+	const addTask = (text: string, forDate?: number, dueDate?: number) => {
+		setTodos((prev: Todo[]) => [
+			...prev,
+			createTask(text, forDate, dueDate),
+		]);
 	};
 
 	const deleteTask = (id: string) => {

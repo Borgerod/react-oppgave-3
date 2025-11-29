@@ -1,15 +1,24 @@
 "use client";
-import { useState, FormEvent, Dispatch, SetStateAction } from "react";
+import {
+	useState,
+	FormEvent,
+	Dispatch,
+	SetStateAction,
+	useEffect,
+	useRef,
+} from "react";
 import { cn } from "@/app/lib/utils";
 import Button from "../Button";
 import TodoFilters from "../TodoFilters";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 type TodoFormProps = {
-	onAdd: (text: string) => void;
+	onAdd: (text: string, forDate?: number, dueDate?: number) => void;
 	filter: string;
 	setFilter: Dispatch<SetStateAction<string>>;
 	sortOrder: string;
 	setSortOrder: Dispatch<SetStateAction<string>>;
+	onClear?: () => void;
 };
 
 export default function TodoForm({
@@ -18,19 +27,91 @@ export default function TodoForm({
 	setFilter,
 	sortOrder,
 	setSortOrder,
+	onClear,
 }: TodoFormProps) {
 	const [text, setText] = useState<string>("");
+	const [showDates, setShowDates] = useState<boolean>(false);
+	// date inputs are unmanaged; flatpickr will control the displayed value
+	const forDateRef = useRef<HTMLInputElement | null>(null);
+	const dueDateRef = useRef<HTMLInputElement | null>(null);
+
+	useEffect(() => {
+		let fp1: any = null;
+		let fp2: any = null;
+		let mounted = true;
+		(async () => {
+			if (!mounted) return;
+			try {
+				const fpModule = await import("flatpickr");
+				const flatpickr = fpModule.default ?? fpModule;
+				// load norwegian locale and localize
+				// @ts-ignore - dynamic import of flatpickr locale (no types)
+				const localeMod = await import("flatpickr/dist/l10n/nb.js");
+				const locale = localeMod.default ?? localeMod;
+				// locale may export an object with key 'nb'
+				const nbLocale = locale.nb ?? locale;
+				if (
+					flatpickr &&
+					nbLocale &&
+					typeof flatpickr.localize === "function"
+				) {
+					flatpickr.localize(nbLocale);
+				}
+
+				const options = {
+					dateFormat: "d.m.Y",
+					allowInput: true,
+					locale: nbLocale,
+				};
+				if (forDateRef.current)
+					fp1 = flatpickr(forDateRef.current as any, options);
+				if (dueDateRef.current)
+					fp2 = flatpickr(dueDateRef.current as any, options);
+			} catch (err) {
+				// fail silently — browser input will still work
+			}
+		})();
+
+		return () => {
+			mounted = false;
+			try {
+				if (fp1 && typeof fp1.destroy === "function") fp1.destroy();
+				if (fp2 && typeof fp2.destroy === "function") fp2.destroy();
+			} catch (e) {}
+		};
+	}, []);
+
+	const parseDateString = (s?: string) => {
+		if (!s) return undefined;
+		// ISO yyyy-mm-dd
+		if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s).getTime();
+		// norwegian dd.mm.yyyy
+		if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) {
+			const [dd, mm, yyyy] = s.split(".").map(Number);
+			return new Date(yyyy, mm - 1, dd).getTime();
+		}
+		const parsed = Date.parse(s);
+		return Number.isNaN(parsed) ? undefined : parsed;
+	};
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (text.trim()) {
-			onAdd(text);
+			const forVal = forDateRef.current?.value;
+			const dueVal = dueDateRef.current?.value;
+			const forDate = parseDateString(forVal);
+			const dueDate = parseDateString(dueVal);
+			onAdd(text, forDate, dueDate);
 			setText("");
+			if (forDateRef.current) forDateRef.current.value = "";
+			if (dueDateRef.current) dueDateRef.current.value = "";
+			setShowDates(false);
 		}
 	};
 
 	return (
 		<>
+			{/* //* [BROWSER / ORIGINAL] - FORM SECTION  */}
 			<section
 				className={cn(
 					"@Container",
@@ -49,7 +130,6 @@ export default function TodoForm({
 					"max-sm:row-span-1",
 					"max-sm:z-20",
 					"max-sm:hidden",
-
 					"",
 					""
 				)}
@@ -132,6 +212,53 @@ export default function TodoForm({
 							</span>
 						</label>
 					</div>
+
+					{/* Chevron toggle - show/hide extra date fields */}
+					<div className="flex items-center justify-start mt-1">
+						<button
+							type="button"
+							onClick={() => setShowDates((s) => !s)}
+							aria-expanded={showDates}
+							className="flex items-center gap-2 p-1 text-primary/70"
+						>
+							{showDates ? <IoIosArrowUp /> : <IoIosArrowDown />}
+							<span className="label">Add dates</span>
+						</button>
+					</div>
+
+					{/* Expandable date row */}
+					{showDates && (
+						<div className="grid grid-cols-2 gap-3 mt-2">
+							<label className="flex flex-col">
+								<span className="label text-primary/70">
+									SetForDate
+								</span>
+								<input
+									ref={forDateRef}
+									type="text"
+									lang="nb-NO"
+									placeholder="dd.mm.yyyy"
+									className={cn(
+										"input bg-background/40 rounded-md p-2 text-primary"
+									)}
+								/>
+							</label>
+							<label className="flex flex-col">
+								<span className="label text-primary/70">
+									SetDueDate
+								</span>
+								<input
+									ref={dueDateRef}
+									type="text"
+									lang="nb-NO"
+									placeholder="dd.mm.yyyy"
+									className={cn(
+										"input bg-background/40 rounded-md p-2 text-primary"
+									)}
+								/>
+							</label>
+						</div>
+					)}
 				</form>
 
 				{/*//* Filters */}
@@ -139,18 +266,13 @@ export default function TodoForm({
 					{...{ filter, setFilter, sortOrder, setSortOrder }}
 				/>
 			</section>
+			{/* //* [MOBILE] - FORM SECTION  */}
 			<section
 				className={cn(
 					"@Container",
-					// "container level-1 glass",
 					"container level-1 glass",
-					//
 					"p-5",
-					// "relative z-10",
 					"grid",
-					// "bg-amber-200",
-					// "col-start-1 col-span-2 row-start-1 row-span-3",
-					//
 					"hidden",
 					"max-sm:grid",
 					"items-center",
@@ -159,15 +281,11 @@ export default function TodoForm({
 					"col-start-1",
 					"row-start-1",
 					"row-span-1",
-					// "z-20",
 					"-mb-10",
-					"w-99",
+					// "w-99",
+					"w-[95%]",
 					"pb-12",
-					// "absolute",
-					// "bottom-5",
 					"top-0",
-					// "max-sm:w-fit",
-					// "max-sm:w-full",
 					"justify-self-center",
 					"",
 					""
@@ -181,21 +299,18 @@ export default function TodoForm({
 					{...{ filter, setFilter, sortOrder, setSortOrder }}
 				/>
 			</section>
+
+			{/* //* [MOBILE] - ADD NEW TASK (SINGLE) */}
 			<section
+				// ADD NEW TASK (SINGLE)
 				className={cn(
 					"@Container",
-					// "container level-1 glass",
 					"container level-2",
-					// "container level-2 glass",
-					// "bg-foreground/80",
 					"bg-transparent",
-					// " shadow-lg",
-					//
 					"p-5",
 					"relative z-10",
 					"grid",
 					"col-start-1 col-span-2 row-start-1 row-span-3",
-					//
 					"hidden",
 					"max-sm:grid",
 					"items-center",
@@ -205,13 +320,19 @@ export default function TodoForm({
 					"-row-start-1",
 					"row-span-1",
 					"z-20",
+					"z-60",
+					"pointer-events-auto",
 					"absolute",
 					"bottom-5",
-					// "bottom-0",
 					"max-sm:w-fit",
 					"max-sm:p-0",
-					// "max-sm:w-full",
 					"justify-self-center",
+					// "max-sm:ml-10",
+					"max-sm:right-5",
+					// "max-sm:px-0",
+					"max-sm:ml-5",
+					"max-sm:ml-[36%]",
+					// "container level-1",
 					"",
 					""
 				)}
@@ -222,16 +343,32 @@ export default function TodoForm({
 					aria-label="Add todo form"
 					className={cn(
 						"flex flex-col gap-5 text-secondary w-full mt-auto",
-						// "max-sm:w-full",
-						"max-sm:w-sm",
+						// "max-sm:mr-",
+						// "max-sm:max-w-",
+						"max-sm:w-full",
+						"container level-1",
+						"row-start-1 col-start-1",
+						// "max-sm:px-10",
 
+						"",
 						""
 					)}
 				>
 					<label htmlFor="todo-input" className="sr-only">
 						Add todo
 					</label>
-					<div className="flex flex-col gap-2 text-secondary ">
+					<div
+						className={cn(
+							// "flex flex-col gap-2 text-secondary z-250",
+							// "container",
+							// "glass",
+							// "level-1",
+							// "level-2",
+							"p-5",
+							"",
+							""
+						)}
+					>
 						<label
 							className={cn(
 								"input",
@@ -243,9 +380,10 @@ export default function TodoForm({
 								"stroke-0",
 								"border-0",
 								"outline-0",
+								"pointer-events-auto",
 								"max-sm:w-full",
-								"max-sm:bg-background",
 								"max-sm:shadow",
+								"",
 								""
 							)}
 						>

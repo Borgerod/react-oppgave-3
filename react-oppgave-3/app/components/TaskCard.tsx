@@ -8,6 +8,8 @@ interface Todo {
 	title: string;
 	completed: boolean;
 	createdAt: number;
+	due: number;
+	for: number;
 }
 
 interface TaskCardProps {
@@ -76,12 +78,14 @@ export default function TaskCard({
 				"w-full",
 				"grid grid-cols-3 items-start justify-between",
 				"self-start",
+				"relative z-50 max-sm:z-50",
 				""
 			)}
 		>
 			<div
 				className={cn(
 					"h-5",
+
 					"h-full w-full",
 					"justify-center",
 					"col-start-1 col-span-1",
@@ -97,6 +101,8 @@ export default function TaskCard({
 					title={`Toggle ${task.title} completed`}
 					className={cn(
 						"checkbox",
+
+						"relative z-50 max-sm:z-50",
 						"checked:bg-primary/80",
 						"border-secondary  checked:border-seconadry",
 						"border-primary/20  checked:border-seconadry",
@@ -129,7 +135,7 @@ export default function TaskCard({
 					className={cn(
 						"fieldset",
 						"w-full",
-						"ml-2",
+						"ml-3",
 						"col-start-2 col-span-1 ",
 						"text-primary ",
 						"select-none",
@@ -138,6 +144,7 @@ export default function TaskCard({
 						"bg-container/20 rounded-xl ",
 						"px-2 ",
 						"container level-3 glass",
+						"backdrop-blur-support",
 						"overflow-hidden",
 						task.completed ? "line-through text-primary/50" : "",
 						""
@@ -145,8 +152,14 @@ export default function TaskCard({
 				>
 					<div className="flex flex-col overflow-hidden">
 						{task.title}
+						{/* <p className="label">
+							added: {formatTimestamp(task.createdAt)}
+						</p> */}
 						<p className="label">
-							{formatTimestamp(task.createdAt)}
+							due: {formatTimestamp(task.due)}
+						</p>
+						<p className="label">
+							dor: {formatTimestamp(task.for)}
 						</p>
 					</div>
 					<button

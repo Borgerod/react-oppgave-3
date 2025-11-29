@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "flatpickr/dist/flatpickr.min.css";
 /* @plugin "daisyui"; */
 @plugin "../tailwind.daisyui.plugin.js";
 
@@ -9,6 +10,17 @@
 	--background: var(--color-neutral-300);
 	--foreground: #171717;
 	--background-image: url("./assets/images/background_light.png");
+
+	/* Abolish native select option checkmark pseudo-element.
+   Targets the engine pseudo `::checkmark` (used by some browsers).
+   This rule purposefully only removes the checkmark visual.
+*/
+	select:not(:-internal-list-box):not([multiple]) option::checkmark,
+	option::checkmark {
+		content: none !important;
+		display: none !important;
+		visibility: hidden !important;
+	}
 	--container: #ffffff; /* new */
 	/* --accent: #ed4a4a; */
 	--accent: #a0b162;
@@ -178,6 +190,12 @@ body {
 	.backdrop-blur-support {
 		-webkit-backdrop-filter: blur(18px);
 		backdrop-filter: blur(18px);
+	}
+
+	/* Portal popover base: positioned fixed and high stacking context */
+	.tf-popover {
+		position: fixed;
+		z-index: 9999;
 	}
 
 	.container.level-1 {

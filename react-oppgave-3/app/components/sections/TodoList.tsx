@@ -3,13 +3,17 @@ import TaskCard from "@/app/components/TaskCard";
 import { StylizedCircle } from "@/app/components/accessories/StylizedCircle";
 import { cn } from "@/app/lib/utils";
 import Button from "../Button";
+import PeriodSelect from "./PeriodSelect";
 import { FiChevronDown } from "react-icons/fi";
+import { getCurrentDate } from "@/app/lib/getDate";
 
 interface Todo {
 	id: string;
 	title: string;
 	completed: boolean;
 	createdAt: number;
+	due: number;
+	for: number;
 }
 
 interface TodoListProps {
@@ -17,6 +21,7 @@ interface TodoListProps {
 	onDelete: (id: string) => void;
 	onToggle: (id: string) => void;
 	onEdit: (id: string, newText: string) => void;
+	onClear?: () => void;
 }
 
 export default function TodoList({
@@ -24,7 +29,9 @@ export default function TodoList({
 	onDelete,
 	onToggle,
 	onEdit,
+	onClear,
 }: TodoListProps) {
+	const { dayName, dayOrdinal } = getCurrentDate();
 	if (!Array.isArray(todos)) return null;
 
 	return (
@@ -34,6 +41,8 @@ export default function TodoList({
 				"container level-1",
 				"grid",
 				"relative",
+				"min-h-0",
+				"h-full",
 				"col-start-3 col-span-full row-start-1 row-span-4",
 				"grid-cols-subgrid grid-rows-subgrid",
 				"grid-cols-3 grid-rows-subgrid",
@@ -62,10 +71,15 @@ export default function TodoList({
 			<div
 				className={cn(
 					"z-10 col-start-1 row-start-1 col-span-full row-span-full ",
-					"grid grid-cols-subgrid grid-rows-auto ",
+					"max-sm:z-50",
+					"grid grid-cols-subgrid grid-rows-[auto_1fr]",
 					"items-start place-content-start",
 					"py-5",
+					"pb-10",
+					// "max-sm:pb-50",
 					"gap-2",
+					"min-h-0",
+					"h-full",
 					//
 					// max-sm responsive adjustments for inner container
 					"max-sm:grid max-sm:grid-cols-3 max-sm:auto-rows-min",
@@ -73,7 +87,7 @@ export default function TodoList({
 					"max-sm:min-h-0",
 					"max-sm:overflow-y-auto max-sm:overflow-x-hidden",
 					// "max-sm:px-4",
-					"max-sm:pb-16",
+					"max-sm:pb-20",
 					"",
 					""
 				)}
@@ -86,136 +100,28 @@ export default function TodoList({
 						// "max-sm:grid max-sm:grid-cols-2",
 						"max-sm:grid max-sm:grid-cols-3",
 						"max-sm:w-full max-sm:mb-4",
+						"",
 						""
 					)}
 				>
 					<div
 						className={cn(
-							"flex flex-col ",
-							" justify-self-center items-start ",
-							"text-left ",
-							"row-start-1 col-start-1 col-span-1"
+							"flex flex-col",
+							"justify-self-center items-start",
+							"text-left",
+							"row-start-1 col-start-1 col-span-1",
+							"relative z-50 max-sm:z-50"
 						)}
 					>
-						{/* // TODO [ ]: Make date-getter */}
-						<h1 className="text-3xl text-primary"> Thu </h1>
-						<h1 className="text-3xl text-primary/30"> 24th </h1>
+						<h1 className="text-3xl text-primary"> {dayName} </h1>
+						<h1 className="text-3xl text-primary/30">
+							{" "}
+							{dayOrdinal}{" "}
+						</h1>
 					</div>
-					<div
-						className={cn(
-							"row-start-1 col-start-2 col-span-2",
-							"justify-self-end ",
-							"self-start",
-							"grid grid-cols-3 items-center ",
-							"justify-items-center",
-							"content-center",
-							" relative",
-							"max-sm:pr-2",
-							""
-						)}
-					>
-						<Button
-							type="solid"
-							shape="pill"
-							className={cn(
-								"badge badge-neutral badge-xs",
-								"@container",
-								"h-6",
-								"h-8",
-								"px-8",
-								"py-0",
-								"m-0 gap-0",
-								"rounded-full",
-								"text-background",
-								"bg-foreground",
-								"",
-
-								"col-start-1 col-span-2",
-								"stroke-0 border-none outline-none ring-offset-none decoration-0",
-								""
-							)}
-							// todo: make this a select
-						>
-							Today
-						</Button>
-						<Button
-							type="solid"
-							shape="circle"
-							className={cn(
-								"select",
-								"badge badge-neutral badge-xs",
-								"@container",
-								"m-0 gap-0",
-								"h-8",
-								"p-2",
-								"rounded-full",
-								"text-background",
-								"bg-foreground",
-								"",
-								"stroke-0 border-none outline-none ring-offset-none decoration-0",
-								"col-start-3 col-span-1",
-								"stroke-none border-none outline-none",
-								""
-							)}
-						>
-							<FiChevronDown className="-rotate-90"></FiChevronDown>
-						</Button>
-
-						{/* BINDER between the buttons */}
-						<div
-							className={cn(
-								"justify-items-center",
-								"items-center",
-								"m-0 gap-4",
-								"absolute",
-								"row-start-1",
-								"-z-10",
-								"ml-0.5",
-								"col-start-2 col-span-2",
-								"grid grid-cols-1 grid-rows-2",
-								"",
-								""
-							)}
-						>
-							<div
-								className={cn(
-									"rounded-full",
-									"bg-container",
-									"row-start-1 col-start-1 col-span-1",
-									"h-3 w-3",
-									"h-2.5 w-2.5",
-									"mr-px",
-									"",
-									""
-								)}
-							></div>
-							<div
-								className={cn(
-									"rounded-full",
-									"bg-foreground",
-									"row-start-1 row-span-2 col-start-1 col-span-1",
-									"h-6 w-10",
-									"h-5 w-10",
-									"-z-1",
-									""
-								)}
-							></div>
-							<div
-								className={cn(
-									"rounded-full",
-									"bg-container",
-									"row-start-2 col-start-1 col-span-1",
-									"h-3 w-3",
-									"h-2.5 w-2.5",
-									"mr-px",
-									"",
-									""
-								)}
-							></div>
-						</div>
-					</div>
+					<PeriodSelect />
 				</div>
-				{todos.map((t) => (
+				{/* {todos.map((t) => (
 					<TaskCard
 						key={t.id}
 						task={t}
@@ -223,7 +129,28 @@ export default function TodoList({
 						onToggle={onToggle}
 						onEdit={onEdit}
 					/>
-				))}
+				))} */}
+				<div
+					className={cn(
+						"w-full h-full max-h-full overflow-auto",
+						"grid grid-cols-1 auto-rows-min gap-2",
+						"row-start-2 col-start-1 col-span-full",
+						"max-sm:overflow-auto",
+
+						"",
+						""
+					)}
+				>
+					{todos.map((t) => (
+						<TaskCard
+							key={t.id}
+							task={t}
+							onDelete={onDelete}
+							onToggle={onToggle}
+							onEdit={onEdit}
+						/>
+					))}
+				</div>
 			</div>
 			{/* <StylizedCircle className="grid row-start-2 row-span-2 col-start-1 col-span-full m-10 max-sm:row-start-1 max-sm:row-span-full max-sm:col-start-1 max-sm:col-span-full max-sm:place-self-center max-sm:m-0 max-sm:z-0" /> */}
 			<StylizedCircle
@@ -245,6 +172,7 @@ export default function TodoList({
 				className={cn(
 					"@Container",
 					"container level-2 glass",
+					"backdrop-blur-support",
 					"grid",
 					"col-start-1 col-span-1 row-start-1 row-span-full",
 					"flex flex-col ",
@@ -253,7 +181,7 @@ export default function TodoList({
 					// max-sm responsive adjustments
 					"max-sm:col-start-1 max-sm:col-span-1",
 					"max-sm:row-start-1 max-sm:row-span-full",
-					"max-sm:z-1",
+					"max-sm:z-15",
 					""
 				)}
 			></div>
@@ -282,6 +210,7 @@ export default function TodoList({
 					"max-sm:hidden",
 					""
 				)}
+				onClick={() => onClear && onClear()}
 			>
 				Clear
 			</Button>

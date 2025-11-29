@@ -16,6 +16,8 @@ interface Todo {
 	title: string;
 	completed: boolean;
 	createdAt: number;
+	due: number;
+	for: number;
 }
 
 interface TodoItem {
@@ -43,6 +45,10 @@ export default function Todo() {
 		todos,
 		setTodos
 	);
+
+	const clearAll = () => {
+		setTodos([]);
+	};
 
 	return (
 		<main
@@ -95,6 +101,7 @@ export default function Todo() {
 					setFilter={setFilter}
 					sortOrder={sortOrder}
 					setSortOrder={setSortOrder}
+					onClear={clearAll}
 				/>
 				{/*//* ___ DARK MODE __________________________________________________________________________________________________ */}
 
@@ -112,6 +119,7 @@ export default function Todo() {
 					onDelete={deleteTask}
 					onToggle={toggleComplete}
 					onEdit={editTask}
+					onClear={clearAll}
 				/>
 			</div>
 		</main>
