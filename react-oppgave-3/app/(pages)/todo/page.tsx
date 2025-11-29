@@ -4,8 +4,10 @@ import { useState, Dispatch, SetStateAction } from "react";
 import { FILTER, SORT_ORDERS } from "@/app/lib/filterConfig.js";
 import { sortArray, toggleFilters } from "@/app/lib/filters";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage.js";
-import useUserLocale from "@/app/hooks/useUserLocale";
+// import useUserLocale from "@/app/hooks/useUserLocale";
+import { useUserLocale } from "@/app/hooks/useUserLocale";
 import useTodos from "@/app/hooks/useTodos";
+import { filterByPeriod } from "@/app/lib/filters";
 import TodoList from "@/app/components/sections/TodoList";
 import TodoForm from "@/app/components/sections/TodoForm";
 import Theme from "@/app/components/sections/Theme";
@@ -16,6 +18,8 @@ interface Todo {
 	title: string;
 	completed: boolean;
 	createdAt: number;
+	due: number;
+	for: number;
 }
 
 interface TodoItem {
@@ -28,6 +32,7 @@ interface TodoItem {
 export default function Todo() {
 	const [filter, setFilter] = useState(FILTER.ALL);
 	const [sortOrder, setSortOrder] = useState(SORT_ORDERS.NEW_OLD);
+	const [period, setPeriod] = useState<string>("today");
 	const userLocale = useUserLocale();
 
 	const _todosTuple = useLocalStorage("todo", []) as [
@@ -43,6 +48,10 @@ export default function Todo() {
 		todos,
 		setTodos
 	);
+
+	const clearAll = () => {
+		setTodos([]);
+	};
 
 	return (
 		<main
@@ -62,8 +71,7 @@ export default function Todo() {
 				"max-sm:max-w-full",
 				"max-sm:overflow-hidden",
 				""
-			)}
-		>
+			)}>
 			<div
 				className={cn(
 					"@Container",
@@ -86,8 +94,7 @@ export default function Todo() {
 					"max-sm:gap-3",
 					"max-sm:gap-0",
 					""
-				)}
-			>
+				)}>
 				{/*//* ___ TODO FORM __________________________________________________________________________________________________ */}
 				<TodoForm
 					onAdd={addTask}
@@ -95,6 +102,7 @@ export default function Todo() {
 					setFilter={setFilter}
 					sortOrder={sortOrder}
 					setSortOrder={setSortOrder}
+					onClear={clearAll}
 				/>
 				{/*//* ___ DARK MODE __________________________________________________________________________________________________ */}
 
@@ -104,14 +112,20 @@ export default function Todo() {
 				<TodoList
 					todos={
 						sortArray(
-							toggleFilters(todos, filter),
+							filterByPeriod(
+								toggleFilters(todos, filter),
+								period
+							),
 							sortOrder,
-							userLocale
+							userLocale.locale
 						) as Todo[]
 					}
 					onDelete={deleteTask}
 					onToggle={toggleComplete}
 					onEdit={editTask}
+					onClear={clearAll}
+					period={period}
+					onPeriodChange={setPeriod}
 				/>
 			</div>
 		</main>

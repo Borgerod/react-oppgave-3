@@ -3,13 +3,61 @@ import { FILTER, SORT_ORDERS } from "@/app/lib/filterConfig.js";
 export const toggleFilters = (array, filter) => {
 	switch (filter) {
 		case FILTER.ACTIVE:
-			console.log(filter);
 			return array.filter((item) => !item.completed);
 
 		case FILTER.COMPLETED:
 			return array.filter((item) => item.completed);
 
 		case FILTER.ALL:
+		default:
+			return array;
+	}
+};
+
+export const filterByPeriod = (array, period) => {
+	if (!period || period === "all") return array;
+	const now = new Date();
+
+	const startOfDay = (d) =>
+		new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+	const addDays = (ts, days) => ts + days * 24 * 60 * 60 * 1000;
+
+	const startToday = startOfDay(now);
+	const startTomorrow = addDays(startToday, 1);
+
+	switch (period) {
+		case "today":
+			return array.filter(
+				(item) => item.for >= startToday && item.for < startTomorrow
+			);
+		case "tomorrow":
+			return array.filter(
+				(item) =>
+					item.for >= startTomorrow &&
+					item.for < addDays(startTomorrow, 1)
+			);
+		case "this week": {
+			// include next 7 days from today
+			const weekEnd = addDays(startToday, 7);
+			return array.filter(
+				(item) => item.for >= startToday && item.for < weekEnd
+			);
+		}
+		case "this month": {
+			const startOfMonth = new Date(
+				now.getFullYear(),
+				now.getMonth(),
+				1
+			).getTime();
+			const startNextMonth = new Date(
+				now.getFullYear(),
+				now.getMonth() + 1,
+				1
+			).getTime();
+			return array.filter(
+				(item) => item.for >= startOfMonth && item.for < startNextMonth
+			);
+		}
 		default:
 			return array;
 	}
