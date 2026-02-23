@@ -1,26 +1,6 @@
 import Link from "next/link";
 export default function Home() {
   return (
-    // <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-    // 	<main className="flex flex-col gap-6 text-center">
-    // 		<p className="text-sm uppercase tracking-[0.3em] text-slate-400">
-    // 			Productivity playground
-    // 		</p>
-    // 		<h1 className="text-4xl font-semibold">
-    // 			Organize your day with the todo board
-    // 		</h1>
-    // 		<p className="text-lg text-slate-300">
-    // 			Follow the link below to open the full-featured task manager
-    // 		</p>
-    // 		<Link
-    // 			href="/pages/todo"
-    // 			className="rounded-md bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-200"
-    // 		>
-    // 			Open todo board
-    // 		</Link>
-    // 	</main>
-    // </div>
-
     <main className="min-h-screen bg-slate-950 px-6 py-20 text-white">
       <div className="mx-auto flex max-w-3xl flex-col gap-8">
         <header>
