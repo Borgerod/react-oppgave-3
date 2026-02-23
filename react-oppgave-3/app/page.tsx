@@ -31,23 +31,3 @@ export default function Home() {
     </main>
   );
 }
-// <div className="relative min-h-screen overflow-hidden bg-slate-950 px-6 py-16 text-white">
-// 	<StylizedCircle
-// 		aria-hidden
-// 		className="pointer-events-none absolute -right-32 -top-32 hidden h-[420px] w-[420px] opacity-40 blur-3xl sm:block"
-// 	/>
-// 	<main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12">
-// 		<header className="space-y-4 text-center sm:text-left">
-// 			<p className="text-sm uppercase tracking-[0.3em] text-slate-400">
-// 				Todo
-// 			</p>
-// 			<h1 className="text-4xl font-semibold">Task board</h1>
-// 			<p className="text-lg text-slate-300">
-// 				Create, categorize and complete tasks with persistent storage.
-// 			</p>
-// 		</header>
-// 		<section className="rounded-3xl border border-white/10 bg-white/5 p-1 shadow-[0_0_120px_rgba(15,23,42,0.35)] backdrop-blur">
-// 			<ToDo />
-// 		</section>
-// 	</main>
-// </div>
