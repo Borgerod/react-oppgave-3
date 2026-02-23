@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { useTheme } from "next-themes";
 import { cn } from "@/app/lib/utils";
@@ -24,7 +24,7 @@ export default function Theme() {
       <div className="col-start-1 col-span-1 font-thin self-start max-sm:hidden">
         <h3>Theme</h3>
         <p className="font-thin text-sm text-secondary/60">
-          <span className="">Set to {theme} mode</span>
+          <span>Set to {theme} mode</span>
         </p>
       </div>
 

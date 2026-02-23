@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-
 import "./globals.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { cn } from "./lib/utils";
