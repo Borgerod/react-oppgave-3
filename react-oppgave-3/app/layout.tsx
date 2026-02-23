@@ -38,7 +38,12 @@ export default function RootLayout({
       >
         <GeolocationInit />
 
-        <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider
+          attribute="class"
+          // defaultTheme="system"
+          // storageKey="theme"
+        >
+          {/* <ThemeProvider storageKey="theme"> */}
           {children}
         </ThemeProvider>
       </body>
