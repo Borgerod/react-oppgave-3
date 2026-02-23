@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/app/lib/utils";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { FILTER, SORT_ORDERS } from "@/app/lib/filterConfig.js";
 import { sortArray, toggleFilters } from "@/app/lib/filters";
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
@@ -9,9 +9,14 @@ import useTodos from "@/app/hooks/useTodos";
 import { filterByPeriod } from "@/app/lib/filters";
 import TodoList from "@/app/components/sections/TodoList";
 import TodoForm from "@/app/components/sections/TodoForm";
-import Theme from "@/app/components/sections/Theme";
+// import Theme from "@/app/components/sections/Theme";
 import { useGeolocation } from "@/app/hooks/useGeolocation";
 // TODO [ ]: Add mobile layout: themebutton stick to bottom, form as header, list as body.
+import dynamic from "next/dynamic";
+
+const Theme = dynamic(() => import("@/app/components/sections/Theme"), {
+  ssr: false,
+});
 
 interface Todo {
   id: string;
