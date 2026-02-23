@@ -130,7 +130,7 @@ function DropdownField({
     "outline-0",
     "min-w-48",
     mobileWidthClass,
-    open && "border-border/40",
+    // open && "b// // // // order-border/40",
     "",
     "",
   );
@@ -140,7 +140,8 @@ function DropdownField({
   );
 
   return (
-    <div className="relative w-full" ref={containerRef}>
+    // <div className="relative w-full w-30" ref={containerRef}>
+    <div className="relative w-30" ref={containerRef}>
       <span id={labelId} className="sr-only">
         {label}
       </span>
@@ -264,11 +265,12 @@ export default function TodoFilters({
   return (
     <>
       <div className="flex flex-col gap-5 justify-end max-sm:flex-row max-sm:gap-0 max-sm:justify-between">
+        {/* <div className="flex flex-col gap-5 justify-end max-sm:flex-row max-sm:gap-0 w-fit"> */}
         <div
           className={cn(
-            "max-sm:flex-1 justify-items-start max-sm:justify-items-center max-sm:content-end",
-            "w-48",
-            "",
+            "max-sm:flex-1 justify-items-start max-sm:justify-items-center max-sm:content-end w-fit",
+            // "w-48",
+            "w-fit",
             "",
           )}
         >
@@ -295,6 +297,7 @@ export default function TodoFilters({
               "hidden",
               "justify-self-start",
               "text-nowrap",
+              "max-sm:w-fit",
               "",
             )}
             onClick={onClear}
@@ -302,7 +305,15 @@ export default function TodoFilters({
             Clear
           </Button>
         </div>
-        <div className="flex max-sm:flex-row flex-col gap-2 max-sm:w-full max-sm:flex-1 max-sm:justify-end">
+        <div
+          className={cn(
+            "flex max-sm:flex-row flex-col gap-2 max-sm:w-full max-sm:flex-1 max-sm:justify-end",
+            "w-fit",
+            "",
+            "",
+            "",
+          )}
+        >
           <div className="flex flex-col gap-2 max-sm:flex-1">
             <h3
               className={cn(
@@ -313,6 +324,7 @@ export default function TodoFilters({
                 "tracking-widest",
                 "max-sm:hidden",
                 "",
+                "max-sm:w-20",
                 "",
               )}
             >
