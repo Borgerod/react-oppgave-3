@@ -61,60 +61,6 @@
   /* --surface-border: #d8c8bf;
 	--surface-outline: #4b3a35; */
 }
-.dark {
-  --background-image: url("./assets/images/background_dark.png");
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --foreground: #d6d6d6;
-  --container: #111827;
-  --foreground: var(--color-zinc-400);
-  /* --foreground: #b26e68; */
-  --container: #191919;
-  --container: var(--color-zinc-950);
-  --container: var(--color-zinc-900);
-  --container: var(--color-zinc-900);
-  --accent: #a0b162;
-  --accent-neg-dark: #5a1415;
-  --accent-neg-dark: #72b6e5;
-  --accent-neg: #ce594f;
-  --accent-neg: #f9f6db;
-  --accent-neg: #38586e54;
-  --accent-neg-dark: #fff6a0;
-  --accent-neg-dark: #0f181d;
-
-  --warning: #ce594f;
-  --warning-dark: #5a1415;
-  --warning-bg: #b1230d62;
-
-  --secondary: #0a0a0a;
-  --primary: #ededed;
-
-  /* --outline: transparent;
-	--border: transparent;
-	--outline: #19191932; */
-  --outline: oklch(51.379% 0.00006 271.152 / 0.15);
-  --border: oklch(87.111% 0.00555 286.025 / 0.25);
-  /* --outline: #0a0a0a; */
-  /* --border: #111827; */
-  /* --surface-border: #4b3a35;
-	--surface-outline: #d8c8bf; */
-  /* --secondary: #ededed; */
-  /* --noise: 1;
-	--depth: 1; */
-
-  /* --XXX: #0d0808;
-	--YYY: #f5f5f5b3; */
-  /* --XXX: rgba(255, 255, 255, 0.04);
-	--XXX: #d4d4d4;
-	--XXX: #e3dad3;
-	--XXX: #f5f1ee; */
-  @layer components {
-    /* level-x: describes how many child-levels the current div is - it will adjust the rounded based on that  */
-    .glass.container.level-1 {
-      @apply bg-zinc-800/40;
-    }
-  }
-}
 
 @theme inline {
   --background-image: var(--background-image);
@@ -248,3 +194,58 @@ body {
 	--color-surface-black-secondary: rgb(0 0 0 / 50%);
 	--color-surface-black-tertiary: #121212; 
 	*/
+
+[data-theme="dark"] {
+  --background-image: url("./assets/images/background_dark.png");
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --foreground: #d6d6d6;
+  --container: #111827;
+  --foreground: var(--color-zinc-400);
+  /* --foreground: #b26e68; */
+  --container: #191919;
+  --container: var(--color-zinc-950);
+  --container: var(--color-zinc-900);
+  --container: var(--color-zinc-900);
+  --accent: #a0b162;
+  --accent-neg-dark: #5a1415;
+  --accent-neg-dark: #72b6e5;
+  --accent-neg: #ce594f;
+  --accent-neg: #f9f6db;
+  --accent-neg: #38586e54;
+  --accent-neg-dark: #fff6a0;
+  --accent-neg-dark: #0f181d;
+
+  --warning: #ce594f;
+  --warning-dark: #5a1415;
+  --warning-bg: #b1230d62;
+
+  --secondary: #0a0a0a;
+  --primary: #ededed;
+
+  /* --outline: transparent;
+	--border: transparent;
+	--outline: #19191932; */
+  --outline: oklch(51.379% 0.00006 271.152 / 0.15);
+  --border: oklch(87.111% 0.00555 286.025 / 0.25);
+  /* --outline: #0a0a0a; */
+  /* --border: #111827; */
+  /* --surface-border: #4b3a35;
+	--surface-outline: #d8c8bf; */
+  /* --secondary: #ededed; */
+  /* --noise: 1;
+	--depth: 1; */
+
+  /* --XXX: #0d0808;
+	--YYY: #f5f5f5b3; */
+  /* --XXX: rgba(255, 255, 255, 0.04);
+	--XXX: #d4d4d4;
+	--XXX: #e3dad3;
+	--XXX: #f5f1ee; */
+  @layer components {
+    /* level-x: describes how many child-levels the current div is - it will adjust the rounded based on that  */
+    .glass.container.level-1 {
+      @apply bg-zinc-800/40;
+    }
+  }
+}

@@ -6,8 +6,8 @@ import { MdDarkMode, MdLightMode } from "react-icons/md";
 import Button from "../Button";
 
 export default function Theme() {
-  const { setTheme } = useTheme();
-  /* {theme, setTheme } caused hydration error so made a seperate isDark variable from document element */
+  const { theme, setTheme } = useTheme();
+
   return (
     <section
       className={cn(
@@ -24,8 +24,7 @@ export default function Theme() {
       <div className="col-start-1 col-span-1 font-thin self-start max-sm:hidden">
         <h3>Theme</h3>
         <p className="font-thin text-sm text-secondary/60">
-          <span className="dark:hidden">Set to light mode</span>
-          <span className="hidden dark:inline">Set to dark mode</span>
+          <span className="">Set to {theme} mode</span>
         </p>
       </div>
 
@@ -44,26 +43,14 @@ export default function Theme() {
           <Button
             type="hollow"
             buttonType="button"
-            onClick={() => {
-              const isDark =
-                document.documentElement.classList.contains("dark");
-              setTheme(isDark ? "light" : "dark");
-            }}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="text-secondary border-transparent!"
             shape="circle"
           >
-            <span className="hidden dark:inline">
-              <MdLightMode />
-            </span>
-            <span className="inline dark:hidden">
-              <MdDarkMode />
-            </span>
+            {theme == "dark" ? <MdLightMode /> : <MdDarkMode />}
           </Button>
         </div>
       </div>
     </section>
   );
-}
-{
-  /*  */
 }
